@@ -67,9 +67,8 @@ public class testVisionFilters extends LinearOpMode {
 
         //Create an instance of the image and then of the pixels
         Image image = frame.getImage(idx);
-        Image image2 = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
-        ByteBuffer img2 = image2.getPixels();
+        ByteBuffer img2 = cloneByteBuffer(px);
 
         //Origin: top right of image (current guess)
 
@@ -138,6 +137,7 @@ public class testVisionFilters extends LinearOpMode {
         CameraDevice.getInstance().setFlashTorchMode(false);
 
         //save picture block
+        boolean graphicalDiagnostic = true;
         boolean bSavePicture = true;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
@@ -147,13 +147,26 @@ public class testVisionFilters extends LinearOpMode {
             int pixel;
             int index = 0;
             int x,y;
-            for (y = 0; y < h; y++) {
-                for (x = 0; x < w; x++) {
-                    thisR = px.get() & 0xFF;
-                    thisG = px.get() & 0xFF;
-                    thisB = px.get() & 0xFF;
-                    bmpData[index] = Color.rgb(thisR, thisG, thisB);
-                    index++;
+            if(graphicalDiagnostic) {
+                for (y = 0; y < h; y++) {
+                    for (x = 0; x < w; x++) {
+                        thisR = img2.get() & 0xFF;
+                        thisG = img2.get() & 0xFF;
+                        thisB = img2.get() & 0xFF;
+                        bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                        index++;
+                    }
+                }
+            }
+            else {
+                for (y = 0; y < h; y++) {
+                    for (x = 0; x < w; x++) {
+                        thisR = px.get() & 0xFF;
+                        thisG = px.get() & 0xFF;
+                        thisB = px.get() & 0xFF;
+                        bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                        index++;
+                    }
                 }
             }
             // Now create a bitmap object from the buffer
@@ -184,5 +197,21 @@ public class testVisionFilters extends LinearOpMode {
         telemetry.addData("totalBlue: ", totalBlue);
         telemetry.addData("totalRed: ", totalRed);
         telemetry.update();
+    }
+    public static ByteBuffer cloneByteBuffer(final ByteBuffer original) {
+        // Create clone with same capacity as original.
+        final ByteBuffer clone = (original.isDirect()) ?
+                ByteBuffer.allocateDirect(original.capacity()) :
+                ByteBuffer.allocate(original.capacity());
+
+        // Create a read-only copy of the original.
+        // This allows reading from the original without modifying it.
+        final ByteBuffer readOnlyCopy = original.asReadOnlyBuffer();
+
+        // Flip and read from the original.
+        readOnlyCopy.flip();
+        clone.put(readOnlyCopy);
+
+        return clone;
     }
 }
