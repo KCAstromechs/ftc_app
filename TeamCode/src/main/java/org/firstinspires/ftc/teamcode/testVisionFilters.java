@@ -83,6 +83,12 @@ public class testVisionFilters extends LinearOpMode {
         System.out.println("timestamp before processing loop");
         telemetry.addData("timestamp ", "before processing image");
         telemetry.update();
+        long timeStartAnalysis = System.currentTimeMillis();
+
+        int avgGoldPos = 0;
+        int sumGoldPos = 0;
+        int numOfGold =  0;
+
         for (int i = 0; i < h; i++) {
 
 //            System.out.println("loop #" + i);
@@ -110,24 +116,49 @@ public class testVisionFilters extends LinearOpMode {
                 //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
                 //if (thisS >= 0.85) {
                 //                  System.out.println("Jewel pixel found");
-                int diff = thisB - thisR;
-                if(diff > 10) {
-                    totalBlue++;
+                if(thisR>180 && thisG>130 & thisB<100) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 255);
+                    px.put(bIDX, (byte) 0);
+                    numOfGold++;
+                    sumGoldPos+=j;
 
-                    img2.put(rIDX, (byte) 0);
-                    img2.put(gIDX, (byte) 0);
-                    img2.put(bIDX, (byte) 255);
                 }
-                else if (diff < -10) {
-                    totalRed++;
-
-                    img2.put(rIDX, (byte) 255);
-                    img2.put(gIDX, (byte) 0);
-                    img2.put(bIDX, (byte) 0);
+                if(thisR>230 && thisG>230 && thisB>230) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 0);
+                }
+                if(i < 30) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 100);
+                }
+                if(j < 30) {
+                    px.put(rIDX, (byte) 100);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 0);
                 }
                 //}
             }
         }
+        avgGoldPos = (int) (sumGoldPos/numOfGold);
+        String goldLocResult = "";
+
+        if(avgGoldPos<420) {
+            goldLocResult = "Gold is on the left side";
+        }
+        else if(avgGoldPos<840) {
+            goldLocResult = "Gold is middle";
+        }
+        else {
+            goldLocResult = "Gold is on the right side";
+        }
+
+        long timeStopAnalysis = System.currentTimeMillis();
+
+        double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis) /1000;
+
 
 
         telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
@@ -150,9 +181,9 @@ public class testVisionFilters extends LinearOpMode {
             if(graphicalDiagnostic) {
                 for (y = 0; y < h; y++) {
                     for (x = 0; x < w; x++) {
-                        thisR = img2.get() & 0xFF;
-                        thisG = img2.get() & 0xFF;
-                        thisB = img2.get() & 0xFF;
+                        thisR = px.get() & 0xFF;
+                        thisG = px.get() & 0xFF;
+                        thisB = px.get() & 0xFF;
                         bmpData[index] = Color.rgb(thisR, thisG, thisB);
                         index++;
                     }
@@ -194,9 +225,11 @@ public class testVisionFilters extends LinearOpMode {
         telemetry.addData("timestamp ", "after save pic");
         telemetry.update();
 
-        telemetry.addData("totalBlue: ", totalBlue);
-        telemetry.addData("totalRed: ", totalRed);
+        //telemetry.addData("totalBlue: ", totalBlue);
+        //telemetry.addData("totalRed: ", totalRed);
+        telemetry.addLine(goldLocResult);
         telemetry.update();
+        sleep(12000);
     }
     public static ByteBuffer cloneByteBuffer(final ByteBuffer original) {
         // Create clone with same capacity as original.
