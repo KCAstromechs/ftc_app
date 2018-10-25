@@ -72,7 +72,7 @@ public class testVisionFilters extends LinearOpMode {
 
         //Origin: top right of image (current guess)
 
-        //test change
+        
 
         //Loop through every pixel column
         int h = image.getHeight();
@@ -160,8 +160,6 @@ public class testVisionFilters extends LinearOpMode {
         long timeStopAnalysis = System.currentTimeMillis();
 
         double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis) /1000;
-
-
 
         telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
         telemetry.update();
