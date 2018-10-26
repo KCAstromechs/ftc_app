@@ -1,27 +1,22 @@
 package org.firstinspires.ftc.teamcode;
 
 public class Toggle {
-    private boolean button = false;
+
     private boolean toggleVal = false;
     private boolean previousVal = false;
 
-    void update(boolean _button) {
-        button = _button;
+    boolean update(boolean button) {
         if(button) {
             if((!previousVal) && (!toggleVal)) {
                 toggleVal = true;
             }
-            else if((!previousVal) && (toggleVal)) {
+            else if((!previousVal)) {
                 toggleVal = false;
             }
             previousVal = true;
-        }
-        else {
+        } else {
             previousVal = false;
         }
-
-    }
-    boolean getVal() {
         return toggleVal;
     }
 }
