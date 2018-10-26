@@ -1,0 +1,39 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+
+@Disabled
+@TeleOp(name="TeleopTemp", group="Temp")
+public class teleopTemplate extends OpMode {
+
+    //init vars
+    float left, right;
+
+    @Override
+    public void init() {
+        RobotBase[robot_name] robotBase = new RobotBase[robot_name]();
+
+        DriveBase[robot_name] driveBase = new DriveBase[robot_name]();
+
+        robotBase.init(args if needed);
+
+        driveBase.init(args if needed);
+    }
+
+    @Override
+    public void loop() {
+
+        left = gamepad1.left_stick_y;
+        right = gamepad1.right_stick_y;
+
+        driveBase.updateDriveMotors(left, left, right, right);
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+}

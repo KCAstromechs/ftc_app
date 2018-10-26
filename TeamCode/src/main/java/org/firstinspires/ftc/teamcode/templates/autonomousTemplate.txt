@@ -1,0 +1,29 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+@Disabled
+@Autonomous (name="AutoTemp", group = "Temp")
+public class autonomousTemplate extends LinearOpMode {
+
+    //init vars
+
+    @Override
+    public void runOpMode() throws InterruptedException {
+
+        //initialize all bot stuff
+        RobotBase[robot_name] robotBase = new RobotBase[robot_name]();
+        DriveBase[robot_name] driveBase = new DriveBase[robot_name]();
+        LooknBase[robot_name] looknBase = new LooknBase[robot_name]();
+        robotBase.init(args if needed);
+        driveBase.init(args if needed);
+        looknBase.init(args if needed);
+
+        waitForStart();
+
+        //here be dragons
+        //they be friends
+    }
+}
