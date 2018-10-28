@@ -19,7 +19,7 @@ public class DriveTrainTester extends OpMode {
     public void loop() {
         latchTest.update(gamepad1.b);
         backLeft.setPower(0);
-        telemetry.addData("Toggle:", latchTest.getVal());
+        telemetry.addData("Toggle:", latchTest.update(true));
         telemetry.update();
     }
 

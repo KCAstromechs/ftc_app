@@ -32,6 +32,11 @@ public class M1Tele1 extends OpMode {
         m_frontL.setDirection(DcMotor.Direction.REVERSE);
         m_backL.setDirection(DcMotor.Direction.REVERSE);
         m_liftR.setDirection(DcMotor.Direction.REVERSE);
+
+        toggleA = new Toggle();
+        toggleB = new Toggle();
+        toggleX = new Toggle();
+        toggleY = new Toggle();
     }
 
     @Override
@@ -52,15 +57,10 @@ public class M1Tele1 extends OpMode {
         m_backR.setPower(BRpwr);
         m_backL.setPower(BLpwr);
 
-        toggleA.update(gamepad1.a);
-        toggleB.update(gamepad1.b);
-        toggleX.update(gamepad1.x);
-        toggleY.update(gamepad1.y);
-
-        a = toggleA.getVal();
-        b = toggleB.getVal();
-        x = toggleX.getVal();
-        y = toggleY.getVal();
+        a = toggleA.update(gamepad1.a);
+        b = toggleB.update(gamepad1.b);
+        x = toggleX.update(gamepad1.x);
+        y = toggleY.update(gamepad1.y);
 
         if (a) {
             s_latch.setPosition(0);
@@ -73,6 +73,11 @@ public class M1Tele1 extends OpMode {
         }
         if (y) {
             s_holdR.setPosition(0);
+        }
+
+        if (gamepad1.left_bumper) {
+            m_liftL.setPower(0.5);
+            m_liftR.setPower(0.5);
         }
     }
 }
