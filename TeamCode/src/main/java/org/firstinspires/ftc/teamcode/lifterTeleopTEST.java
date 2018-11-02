@@ -12,13 +12,15 @@ public class lifterTeleopTEST extends OpMode {
     private double s;
 
     private DcMotor lift1, lift2;
-    private Servo a;
+    private Servo a, holdR, holdL;
 
     @Override
     public void init() {
         lift1 = hardwareMap.dcMotor.get("liftLeft");
         lift2 = hardwareMap.dcMotor.get("liftRight");
         a = hardwareMap.servo.get("latch");
+        holdR = hardwareMap.servo.get("holdRight");
+        holdL = hardwareMap.servo.get("holdLeft");
     }
 
     @Override
@@ -30,10 +32,18 @@ public class lifterTeleopTEST extends OpMode {
         lift2.setPower(-s);
 
         if(gamepad1.a) {
-            a.setPosition(1);
+            a.setPosition(0.75);
         }
         if(gamepad1.b){
-            a.setPosition(0);
+            a.setPosition(0.45);
+        }
+        if(gamepad1.x){
+            holdL.setPosition(0.8);
+            holdR.setPosition(0.1);
+        }
+        if(gamepad1.y){
+            holdL.setPosition(0.5);
+            holdR.setPosition(0.5);
         }
     }
 

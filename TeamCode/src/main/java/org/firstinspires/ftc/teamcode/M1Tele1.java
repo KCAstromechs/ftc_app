@@ -57,10 +57,10 @@ public class M1Tele1 extends OpMode {
         toggleX.update(gamepad1.x);
         toggleY.update(gamepad1.y);
 
-        a = toggleA.getVal();
+        /*a = toggleA.getVal();
         b = toggleB.getVal();
         x = toggleX.getVal();
-        y = toggleY.getVal();
+        y = toggleY.getVal();*/
 
         if (a) {
             s_latch.setPosition(0);
