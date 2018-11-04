@@ -12,7 +12,7 @@ public class M1Tele1 extends OpMode {
     DcMotor m_frontR, m_frontL, m_backR, m_backL, m_liftR, m_liftL;
     Servo s_latch, s_mark, s_holdR, s_holdL;
     Toggle toggleA, toggleB, toggleX, toggleY;
-    double leftP, rightP, leftTP, rightTP, FLpwr, FRpwr, BLpwr, BRpwr;
+    double leftP, rightP, leftTP, rightTP, FLpwr, FRpwr, BLpwr, BRpwr, liftPower;
     boolean a, b, x, y;
 
     @Override
@@ -29,8 +29,20 @@ public class M1Tele1 extends OpMode {
         s_holdR = hardwareMap.servo.get("holdRight");
         s_holdL = hardwareMap.servo.get("holdLeft");
 
+        toggleA = new Toggle();
+        toggleB = new Toggle();
+        toggleX = new Toggle();
+        toggleY = new Toggle();
+
         m_frontL.setDirection(DcMotor.Direction.REVERSE);
         m_backL.setDirection(DcMotor.Direction.REVERSE);
+
+        m_frontR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        m_frontL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        m_backL.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        m_backR.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+
         m_liftR.setDirection(DcMotor.Direction.REVERSE);
     }
 
@@ -52,27 +64,44 @@ public class M1Tele1 extends OpMode {
         m_backR.setPower(BRpwr);
         m_backL.setPower(BLpwr);
 
-        toggleA.update(gamepad1.a);
-        toggleB.update(gamepad1.b);
-        toggleX.update(gamepad1.x);
-        toggleY.update(gamepad1.y);
+        a = toggleA.update(gamepad1.a);
+        b = toggleB.update(gamepad1.b);
+        x = toggleX.update(gamepad1.x);
+        y = toggleY.update(gamepad1.y);
+
+        liftPower = gamepad2.left_stick_y;
+
+        m_liftL.setPower(liftPower);
+        m_liftR.setPower(liftPower);
 
         /*a = toggleA.getVal();
         b = toggleB.getVal();
         x = toggleX.getVal();
         y = toggleY.getVal();*/
 
-        if (a) {
-            s_latch.setPosition(0);
+        if (b) {
+            s_latch.setPosition(0.45);
+        } else{
+            s_latch.setPosition(0.75);
         }
         if (b) {
-            s_mark.setPosition(0);
+            //s_mark.setPosition(0);
         }
         if (x) {
-            s_holdL.setPosition(0);
+            //s_holdL.setPosition(0);
         }
         if (y) {
-            s_holdR.setPosition(0);
+            s_holdR.setPosition(.1);
+            s_holdL.setPosition(.8);
         }
+        else {
+            s_holdR.setPosition(.5);
+            s_holdL.setPosition(.5);
+        }
+        telemetry.addData("Y:", y);
+        telemetry.addData("B:", b);
+        telemetry.addData("gameB:", gamepad1.b);
+        telemetry.addData("gameY:", gamepad1.y);
+        telemetry.update();
     }
 }
