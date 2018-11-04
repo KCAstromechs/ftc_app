@@ -28,12 +28,11 @@ public class DriveBaseSlaHappy {
         backLeft.setDirection(DcMotor.Direction.REVERSE);
     }
 
-    public void updateDriveMotors(double left, double right) {
-        frontRight.setPower(right);
-        backRight.setPower(right);
-        frontLeft.setPower(left);
-        frontLeft.setPower(left);
-
+    public void updateDriveMotors(double frontleft, double frontright, double backleft, double backright) {
+        frontRight.setPower(frontright);
+        backRight.setPower(backright);
+        frontLeft.setPower(frontleft);
+        backLeft.setPower(backleft);
     }
     public void driveStraight(double distance, double speed) {
         resetEncoders(speedControl);
@@ -41,13 +40,13 @@ public class DriveBaseSlaHappy {
 
         while (Math.abs(encoderDist) > Math.abs(frontRight.getCurrentPosition())  ) {
             if(distance > 0) {
-                updateDriveMotors(speed, speed);
+                updateDriveMotors(speed, speed, speed, speed);
             }
             else {
-                updateDriveMotors(-speed, -speed);
+                updateDriveMotors(-speed, -speed, -speed, -speed);
             }
         }
-        updateDriveMotors(0, 0);
+        updateDriveMotors(0, 0, 0, 0);
 
     }
     public void turn (double distance, double speed) {
@@ -56,13 +55,13 @@ public class DriveBaseSlaHappy {
 
         while (Math.abs(encoderDist) > Math.abs(frontRight.getCurrentPosition())  ) {
             if(distance > 0) {
-                updateDriveMotors(speed, -speed);
+                updateDriveMotors(speed, -speed, speed, -speed);
             }
             else {
-                updateDriveMotors(-speed, speed);
+                updateDriveMotors(-speed, speed, -speed, speed);
             }
         }
-        updateDriveMotors(0, 0);
+        updateDriveMotors(0, 0, 0, 0);
     }
 
     public void driveCurvy() {
