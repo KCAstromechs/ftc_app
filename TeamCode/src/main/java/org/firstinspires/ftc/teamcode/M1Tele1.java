@@ -74,11 +74,6 @@ public class M1Tele1 extends OpMode {
         m_liftL.setPower(liftPower);
         m_liftR.setPower(liftPower);
 
-        /*a = toggleA.getVal();
-        b = toggleB.getVal();
-        x = toggleX.getVal();
-        y = toggleY.getVal();*/
-
         if (b) {
             s_latch.setPosition(0.45);
         } else{

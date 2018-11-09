@@ -6,7 +6,6 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
 @TeleOp(name="SlaHappy Tele")
 public class SlaHappyTeleOp extends OpMode {
 
@@ -35,11 +34,14 @@ public class SlaHappyTeleOp extends OpMode {
         holdRight = hardwareMap.servo.get("holdRight");
         holdLeft = hardwareMap.servo.get("holdLeft");
 
+        liftRight.setDirection(DcMotor.Direction.REVERSE);
+
         //robotBase.init(args if needed);
     }
 
     @Override
     public void loop() {
+
 
         leftP = gamepad1.left_stick_y;
         rightP = gamepad1.right_stick_y;
