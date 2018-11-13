@@ -206,7 +206,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
         zRotation = normalize360(rawGyro - zero);
 
 
-        if(sensorDataCounter % 100 == 0) {
+        if(sensorDataCounter % 100 == 0 && debug) {
             callingOpMode.telemetry.addData("zRotation: ", zRotation);
             callingOpMode.telemetry.update();
         }

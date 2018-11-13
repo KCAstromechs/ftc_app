@@ -6,8 +6,12 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import static android.content.Context.SENSOR_SERVICE;
+import static java.lang.Thread.sleep;
 
 public class RobotBaseSlaHappy implements SensorEventListener {
     //variables for gyro operation
@@ -29,13 +33,46 @@ public class RobotBaseSlaHappy implements SensorEventListener {
     boolean debug;
     OpMode callingOpMode;
 
+    public DcMotor liftL, liftR;
+    public Servo latch, holdR, holdL;
 
     public RobotBaseSlaHappy(boolean _debug, OpMode _callingOpMode) {
         debug = _debug;
         callingOpMode = _callingOpMode;
 
+        liftL = callingOpMode.hardwareMap.dcMotor.get("liftLeft");
+        liftR = callingOpMode.hardwareMap.dcMotor.get("liftRight");
+        latch = callingOpMode.hardwareMap.servo.get("latch");
+        holdR = callingOpMode.hardwareMap.servo.get("holdRight");
+        holdL = callingOpMode.hardwareMap.servo.get("holdLeft");
+        liftR.setDirection(DcMotorSimple.Direction.REVERSE);
     }
 
+    public void land () throws InterruptedException {
+        liftL.setPower(-1);
+        liftR.setPower(-1);
+
+        sleep(1000);
+
+        holdL.setPosition(0.8);
+        holdR.setPosition(0.1);
+
+        sleep(1000);
+
+        liftL.setPower(1);
+        liftR.setPower(1);
+
+        sleep(1000);
+
+        liftL.setPower(0);
+        liftR.setPower(0);
+
+        sleep(1500);
+
+        latch.setPosition(0.75);
+
+        sleep(500);
+    }
 
     @Override
     public void onSensorChanged(SensorEvent event) {

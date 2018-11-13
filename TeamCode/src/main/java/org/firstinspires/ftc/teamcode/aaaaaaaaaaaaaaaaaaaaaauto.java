@@ -46,10 +46,10 @@ public class aaaaaaaaaaaaaaaaaaaaaauto extends LinearOpMode {
         lift1.setPower(0);
         lift2.setPower(0);
 
-        sleep(2000);
+        sleep(1500);
 
         a.setPosition(0.75);
 
-        sleep(5000);
+        sleep(500);
     }
 }
