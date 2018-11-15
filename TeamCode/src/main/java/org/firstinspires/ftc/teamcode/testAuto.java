@@ -22,7 +22,7 @@ public class testAuto extends LinearOpMode {
 
         waitForStart();
 
-        driveBase.driveStraight(18, 0.5);
-        driveBase.driveStraight(-18, 0.5);
+        driveBase.driveStraight(18, 0.5f);
+        driveBase.driveStraight(-18, 0.5f);
     }
 }

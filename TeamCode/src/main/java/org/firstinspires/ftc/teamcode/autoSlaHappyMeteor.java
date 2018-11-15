@@ -8,30 +8,32 @@ public class autoSlaHappyMeteor extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DriveBaseSlaHappy driveTrain = new DriveBaseSlaHappy(true, true, this);
+        DriveBaseSlaHappy driveBase = new DriveBaseSlaHappy(false, true, this);
         VisionBaseSlaHappy camera = new VisionBaseSlaHappy(true, true, this);
         RobotBaseSlaHappy robotBase = new RobotBaseSlaHappy(true, this);
         waitForStart();
 
-        robotBase.land();
+        //robotBase.land();
 
         VisionBaseSlaHappy.MINERALS result = camera.analyzeSample(450, 700, 0, 1200);
-        driveTrain.hasBeenZeroed = false;
+        driveBase.hasBeenZeroed = false;
 
+        driveBase.driveStraight(14, 0, 0.25);
 
         if (result == VisionBaseSlaHappy.MINERALS.LEFT) {
             telemetry.addLine("LEFT position");
-            driveTrain.turnGyro(335, .5);
+            driveBase.strafe(14, 0, 1);
         }
         if (result == VisionBaseSlaHappy.MINERALS.CENTER) {
-            driveTrain.turnGyro(0, .5);
             telemetry.addLine("CENTER position");
         }
         if (result == VisionBaseSlaHappy.MINERALS.RIGHT) {
-            driveTrain.turnGyro(25, .5);
             telemetry.addLine("RIGHT position");
+            driveBase.strafe(14, 0, -1);
         }
         telemetry.update();
+
+        driveBase.driveStraight(14, 0);
 
         sleep(3000);
 
