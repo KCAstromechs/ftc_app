@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import static android.content.Context.SENSOR_SERVICE;
 import static java.lang.Thread.sleep;
 
-public class RobotBaseSlaHappy implements SensorEventListener {
+public class RobotBaseOliver implements SensorEventListener {
     //variables for gyro operation
     private float zero;
     private float rawGyro;
@@ -34,9 +34,9 @@ public class RobotBaseSlaHappy implements SensorEventListener {
     OpMode callingOpMode;
 
     public DcMotor liftL, liftR;
-    public Servo latch, holdR, holdL;
+    public Servo latch, holdR, holdL, mark, flap;
 
-    public RobotBaseSlaHappy(boolean _debug, OpMode _callingOpMode) {
+    public RobotBaseOliver(boolean _debug, OpMode _callingOpMode) {
         debug = _debug;
         callingOpMode = _callingOpMode;
 
@@ -45,7 +45,11 @@ public class RobotBaseSlaHappy implements SensorEventListener {
         latch = callingOpMode.hardwareMap.servo.get("latch");
         holdR = callingOpMode.hardwareMap.servo.get("holdRight");
         holdL = callingOpMode.hardwareMap.servo.get("holdLeft");
+        mark = callingOpMode.hardwareMap.servo.get("mark");
+        flap = callingOpMode.hardwareMap.servo.get("flap");
         liftR.setDirection(DcMotorSimple.Direction.REVERSE);
+        mark.setPosition(0.75);
+        flap.setPosition(0.7);
     }
 
     public void land () throws InterruptedException {
@@ -72,6 +76,14 @@ public class RobotBaseSlaHappy implements SensorEventListener {
         latch.setPosition(0.75);
 
         sleep(500);
+    }
+
+    public void deployMarker () {
+        mark.setPosition(1);
+    }
+
+    public void deployFlap () {
+        flap.setPosition(0.3);
     }
 
     @Override

@@ -13,7 +13,7 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import com.qualcomm.robotcore.util.Range;
 
-public class DriveBaseSlaHappy implements SensorEventListener {
+public class DriveBaseOliver implements SensorEventListener {
     DcMotor frontRight, frontLeft, backRight, backLeft, encoderMotor;
 
     OpMode callingOpMode;
@@ -21,11 +21,15 @@ public class DriveBaseSlaHappy implements SensorEventListener {
     boolean speedControl;
     boolean debug;
 
-    int ticksPerInch = (int) ((160)/(4 * Math.PI));
+    private double ticksPerRotation = 560;
+
+    private double wheelDiameter = 4;
+
+    double ticksPerInch = ((ticksPerRotation * 32.)/(wheelDiameter * Math.PI * 26.));
 
     private static final double P_DRIVE_COEFF = 0.02;
 
-    private static final double driveSpeed = 0.5;
+    static final double driveSpeed = 0.5;
 
     //variables for gyro operation
     private float zero;
@@ -43,7 +47,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
 
     private float zRotation;
 
-    public DriveBaseSlaHappy (boolean _speedControl, boolean _debug, OpMode _callingOpMode){
+    public DriveBaseOliver(boolean _speedControl, boolean _debug, OpMode _callingOpMode){
         speedControl = _speedControl;
         debug = _debug;
         callingOpMode = _callingOpMode;
@@ -72,7 +76,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
         backLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        encoderMotor = frontLeft;
+        encoderMotor = backLeft;
 
         mSensorManager = (SensorManager) _callingOpMode.hardwareMap.appContext.getSystemService(SENSOR_SERVICE);
         mRotationVectorSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_GAME_ROTATION_VECTOR);
@@ -112,8 +116,8 @@ public class DriveBaseSlaHappy implements SensorEventListener {
 
             correction = Range.clip(error * P_DRIVE_COEFF, -1, 1);
 
-            leftPower = power + correction;
-            rightPower = power - correction;
+            leftPower = power - correction;
+            rightPower = power + correction;
 
             max = Math.max(Math.abs(leftPower), Math.abs(rightPower));
             if (max > 1.0) {
@@ -123,6 +127,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
             updateDriveMotors(leftPower, rightPower, leftPower, rightPower);
 
             if ((loops % 10) ==  0) {
+                callingOpMode.telemetry.addData("gyro" , zRotation);
                 callingOpMode.telemetry.addData("encoder" , encoderMotor.getCurrentPosition());
                 callingOpMode.telemetry.addData("loops", loops);
                 callingOpMode.telemetry.update();
@@ -136,9 +141,10 @@ public class DriveBaseSlaHappy implements SensorEventListener {
         Thread.sleep(500);
     }
 
-    protected void turn(float turnHeading, double power) throws InterruptedException {
+    public void turn(float turnHeading, double power) throws InterruptedException {
         int wrapFix = 0;                                        //Can be used to modify values and make math around 0 easier
         float shiftedTurnHeading = turnHeading;                 //Can be used in conjunction with wrapFix to make math around 0 easier
+        long loops = 0;
 
         power = Math.abs(power);                                //makes sure the power is positive
         if (power>1) power = 1;                                 //makes sure the power isn't >1
@@ -164,7 +170,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
         //If it would be longer to take the ccwise path, we go *** CLOCKWISE ***
         if(Math.abs(cclockwise) >= Math.abs(clockwise)){
 
-            updateDriveMotors(power, -power, power, -power);
+            updateDriveMotors(-power, power, -power, power);
 
             //While we're not within our error, and we haven't overshot, and the bot is running
             while(Math.abs(normalize360(zRotation + wrapFix)- shiftedTurnHeading) > error &&
@@ -178,6 +184,12 @@ public class DriveBaseSlaHappy implements SensorEventListener {
                 clockwise = normalize360(clockwise);
                 cclockwise = normalize360(cclockwise);
 
+                if ((loops % 10) ==  0) {
+                    callingOpMode.telemetry.addData("gyro" , zRotation);
+                    callingOpMode.telemetry.addData("loops", loops);
+                    callingOpMode.telemetry.update();
+                }
+
                 //Chill a hot decisecond
                 Thread.sleep(10);
             }
@@ -185,7 +197,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
         //If it would take longer to take the cwise path, we go *** COUNTERCLOCKWISE ***
         else if(Math.abs(clockwise) > Math.abs(cclockwise)) {
 
-            updateDriveMotors(-power, power, -power, power);
+            updateDriveMotors(power, -power, power, -power);
 
             //While we're not within our error, and we haven't overshot, and the bot is running
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
@@ -198,6 +210,12 @@ public class DriveBaseSlaHappy implements SensorEventListener {
                 //Normalize cwise & ccwise values to between 0=360
                 clockwise = normalize360(clockwise);
                 cclockwise = normalize360(cclockwise);
+
+                if ((loops % 10) ==  0) {
+                    callingOpMode.telemetry.addData("gyro" , zRotation);
+                    callingOpMode.telemetry.addData("loops", loops);
+                    callingOpMode.telemetry.update();
+                }
 
                 //Hold up a hot decisecond
                 Thread.sleep(10);
@@ -241,6 +259,7 @@ public class DriveBaseSlaHappy implements SensorEventListener {
             }
 
             if ((loops % 10) ==  0) {
+                callingOpMode.telemetry.addData("gyro" , zRotation);
                 callingOpMode.telemetry.addData("encoder" , encoderMotor.getCurrentPosition());
                 callingOpMode.telemetry.addData("loops", loops);
                 callingOpMode.telemetry.update();

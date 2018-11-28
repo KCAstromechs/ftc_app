@@ -3,22 +3,22 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
-@TeleOp(name="SlaHappy Tele")
-public class SlaHappyTeleOp extends OpMode {
+@TeleOp(name="Oliver Teleop")
+public class teleopOliver extends OpMode {
 
     //init vars
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
     boolean a, x;
-    DriveBaseSlaHappy driveBase;
-    RobotBaseSlaHappy robotBase;
+    DriveBaseOliver driveBase;
+    RobotBaseOliver robotBase;
     Toggle toggleA, toggleX, toggleY;
 
     @Override
     public void init() {
-        //RobotBaseSlaHappy robotBase = new RobotBase[robot_name]();
+        //RobotBaseOliver robotBase = new RobotBase[robot_name]();
 
-        driveBase = new DriveBaseSlaHappy(false, false, this);
-        robotBase = new RobotBaseSlaHappy(true, this);
+        driveBase = new DriveBaseOliver(false, false, this);
+        robotBase = new RobotBaseOliver(true, this);
 
         toggleA = new Toggle();
         toggleX = new Toggle();
@@ -66,6 +66,11 @@ public class SlaHappyTeleOp extends OpMode {
         robotBase.liftR.setPower(gamepad2.left_stick_y);
         robotBase.liftL.setPower(gamepad2.left_stick_y);
 
+        telemetry.addData("back left: ", driveBase.backLeft.getCurrentPosition());
+        telemetry.addData("back right: ", driveBase.backRight.getCurrentPosition());
+        telemetry.addData("front left: ", driveBase.frontLeft.getCurrentPosition());
+        telemetry.addData("front right: ", driveBase.frontRight.getCurrentPosition());
+        telemetry.update();
     }
 
     private void reducePowers(float power) {

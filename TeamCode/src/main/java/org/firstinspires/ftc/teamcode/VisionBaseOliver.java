@@ -20,13 +20,13 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class VisionBaseSlaHappy {
+public class VisionBaseOliver {
 
     private VuforiaLocalizer vuforia;
     boolean speedControl, debug;
     OpMode callingOpMode;
 
-    public VisionBaseSlaHappy(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
+    public VisionBaseOliver(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
         speedControl = _speedControl;
         debug = _debug;
         callingOpMode = _callingOpMode;
