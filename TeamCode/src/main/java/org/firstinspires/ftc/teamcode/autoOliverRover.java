@@ -13,7 +13,7 @@ public class autoOliverRover extends LinearOpMode {
         RobotBaseOliver robotBase = new RobotBaseOliver(true, this);
         waitForStart();
 
-        //robotBase.land();
+        robotBase.land();
 
         VisionBaseOliver.MINERALS result = camera.analyzeSample(450, 700, 0, 1200);
         driveBase.hasBeenZeroed = false;

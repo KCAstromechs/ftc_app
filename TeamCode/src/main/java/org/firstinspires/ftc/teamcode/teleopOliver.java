@@ -8,23 +8,18 @@ public class teleopOliver extends OpMode {
 
     //init vars
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
-    boolean a, x;
+    boolean a, y;
     DriveBaseOliver driveBase;
     RobotBaseOliver robotBase;
-    Toggle toggleA, toggleX, toggleY;
+    Toggle toggleA, toggleY;
 
     @Override
     public void init() {
-        //RobotBaseOliver robotBase = new RobotBase[robot_name]();
-
         driveBase = new DriveBaseOliver(false, false, this);
         robotBase = new RobotBaseOliver(true, this);
 
         toggleA = new Toggle();
-        toggleX = new Toggle();
         toggleY = new Toggle();
-
-        //robotBase.init(args if needed);
     }
 
     @Override
@@ -46,9 +41,9 @@ public class teleopOliver extends OpMode {
         driveBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
 
         a = toggleA.update(gamepad1.a);
-        x = toggleX.update(gamepad1.x);
+        y = toggleY.update(gamepad1.y);
 
-        if (x)
+        if (y)
             robotBase.latch.setPosition(0.75);
         else
             robotBase.latch.setPosition(0.45);
@@ -62,10 +57,13 @@ public class teleopOliver extends OpMode {
             robotBase.holdL.setPosition(0.5);
         }
 
-
-        robotBase.liftR.setPower(gamepad2.left_stick_y);
-        robotBase.liftL.setPower(gamepad2.left_stick_y);
-
+        if (gamepad1.dpad_up) {
+            robotBase.liftR.setPower(1);
+            robotBase.liftL.setPower(1);
+        } else if (gamepad1.dpad_down) {
+            robotBase.liftR.setPower(-1);
+            robotBase.liftL.setPower(-1);
+        }
         telemetry.addData("back left: ", driveBase.backLeft.getCurrentPosition());
         telemetry.addData("back right: ", driveBase.backRight.getCurrentPosition());
         telemetry.addData("front left: ", driveBase.frontLeft.getCurrentPosition());
