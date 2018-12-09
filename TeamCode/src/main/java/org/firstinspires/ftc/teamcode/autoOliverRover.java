@@ -15,10 +15,15 @@ public class autoOliverRover extends LinearOpMode {
 
         robotBase.land();
 
-        VisionBaseOliver.MINERALS result = camera.analyzeSample(450, 700, 0, 1200);
         driveBase.hasBeenZeroed = false;
 
-        driveBase.driveStraight(14, 0, 0.25);
+        sleep(1000);
+
+        driveBase.turn(355, 0.25);
+
+        VisionBaseOliver.MINERALS result = camera.analyzeSample(450, 700, 0, 1200);
+
+        driveBase.driveStraight(14, 0, 0.5);
 
         if (result == VisionBaseOliver.MINERALS.LEFT) {
             driveBase.strafe(14, 0, 0.5);
@@ -32,24 +37,26 @@ public class autoOliverRover extends LinearOpMode {
         driveBase.driveStraight(14, 0, -DriveBaseOliver.driveSpeed);
 
         if (result == VisionBaseOliver.MINERALS.RIGHT) {
-            driveBase.strafe(62, 0, 0.5);
+            driveBase.strafe(60, 0, 0.6);
         }
         if (result == VisionBaseOliver.MINERALS.CENTER) {
-            driveBase.strafe(48, 0, 0.5);
+            driveBase.strafe(46, 0, 0.6);
         }
         if (result == VisionBaseOliver.MINERALS.LEFT) {
-            driveBase.strafe(34, 0, 0.5);
+            driveBase.strafe(32, 0, 0.6);
         }
 
-        driveBase.turn(135, 0.5);
+        driveBase.turn(123, 0.5);
 
-        driveBase.strafe(64, 135, 0.5);
+        driveBase.strafe(64, 130, 0.75);
 
         robotBase.deployMarker();
 
-        sleep(3000);
+        sleep(1000);
 
-        driveBase.strafe(68, 135, -0.5);
+        driveBase.turn(42, 0.5);
+
+        driveBase.driveStraight(80, 50, -0.5);
 
         driveBase.turn(90, 0.5);
 

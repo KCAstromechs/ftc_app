@@ -56,12 +56,12 @@ public class RobotBaseOliver implements SensorEventListener {
         liftL.setPower(-1);
         liftR.setPower(-1);
 
-        sleep(1000);
+        sleep(500);
 
         holdL.setPosition(0.8);
         holdR.setPosition(0.1);
 
-        sleep(1000);
+        sleep(500);
 
         liftL.setPower(1);
         liftR.setPower(1);
@@ -71,7 +71,7 @@ public class RobotBaseOliver implements SensorEventListener {
         liftL.setPower(0);
         liftR.setPower(0);
 
-        sleep(1500);
+        sleep(1000);
 
         latch.setPosition(0.75);
 

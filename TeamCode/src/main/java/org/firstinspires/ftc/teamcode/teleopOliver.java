@@ -63,6 +63,9 @@ public class teleopOliver extends OpMode {
         } else if (gamepad1.dpad_down) {
             robotBase.liftR.setPower(-1);
             robotBase.liftL.setPower(-1);
+        } else {
+            robotBase.liftR.setPower(0);
+            robotBase.liftL.setPower(0);
         }
         telemetry.addData("back left: ", driveBase.backLeft.getCurrentPosition());
         telemetry.addData("back right: ", driveBase.backRight.getCurrentPosition());

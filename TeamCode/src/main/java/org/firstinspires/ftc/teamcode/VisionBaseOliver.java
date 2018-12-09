@@ -52,10 +52,7 @@ public class VisionBaseOliver {
 
     public MINERALS analyzeSample(int yStart, int yMax, int xStart, int xMax) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
-        int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
-        int totalRed = 1;                           //Total number of red pixels to help find red side location
         int idx = 0;                                //Ensures we get correct image type from Vuforia
-        float minRGB, maxRGB;
 
         System.out.println("timestamp before getting image");
         callingOpMode.telemetry.addData("timestamp ", "before getting image");
@@ -72,7 +69,6 @@ public class VisionBaseOliver {
         //Create an instance of the image and then of the pixels
         Image image = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
-        ByteBuffer img2 = cloneByteBuffer(px);
 
         //Origin: top right of image (current guess)
 
@@ -113,15 +109,6 @@ public class VisionBaseOliver {
                 thisG = px.get(gIDX) & 0xFF;
                 thisB = px.get(bIDX) & 0xFF;
 
-
-                //Convert the RGB vals into S
-                minRGB = Math.min(thisR, Math.min(thisB, thisG)) + 1;
-                maxRGB = Math.max(thisR, Math.max(thisB, thisG)) + 1;
-                //System.out.println("Saturation: " + thisS);
-
-                //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
-                //if (thisS >= 0.85) {
-                //                  System.out.println("Jewel pixel found");
                 if(thisR>180 && thisG>130 & thisB<100) {
                     px.put(rIDX, (byte) 0);
                     px.put(gIDX, (byte) 255);

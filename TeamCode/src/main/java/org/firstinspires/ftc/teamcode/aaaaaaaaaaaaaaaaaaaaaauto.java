@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+@Disabled
 @Autonomous (name="aaaaaaaaaaaaaaaaaaaaaauto", group = "test")
 public class aaaaaaaaaaaaaaaaaaaaaauto extends LinearOpMode {
 
