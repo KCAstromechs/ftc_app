@@ -2,21 +2,32 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
+import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="Oliver Teleop")
-public class teleopOliver extends OpMode {
+@TeleOp(name="jank Teleop")
+public class JankTeleop extends OpMode {
 
     //init vars
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
     boolean a, y;
     DriveBaseOliver driveBase;
-    RobotBaseOliver robotBase;
     Toggle toggleA, toggleY;
+    DcMotor d, b, c;
+    CRServo e;
+    double f = 0;
+    double error = 0;
 
     @Override
     public void init() {
         driveBase = new DriveBaseOliver(false, false, this);
-        robotBase = new RobotBaseOliver(true, this);
+
+        d = hardwareMap.dcMotor.get("lift");
+        b = hardwareMap.dcMotor.get("rotate");
+        c = hardwareMap.dcMotor.get("extender");
+        e = hardwareMap.crservo.get("spin");
+        b.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        b.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         toggleA = new Toggle();
         toggleY = new Toggle();
@@ -38,39 +49,35 @@ public class teleopOliver extends OpMode {
 
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        driveBase.updateDriveMotors(frontLeftPower/3, frontRightPower/3, backLeftPower/3, backRightPower/3);
+        driveBase.updateDriveMotors(frontLeftPower, frontRightPower, backLeftPower, backRightPower);
 
-        /*a = toggleA.update(gamepad1.a);
-        y = toggleY.update(gamepad1.y);
+        c.setPower(gamepad2.left_stick_y);
 
-        if (y)
-            robotBase.latch.setPosition(0.75);
-        else
-            robotBase.latch.setPosition(0.45);
+        f+= (gamepad2.right_stick_y*100.);
+        error = f - b.getCurrentPosition();
+        b.setPower(error/1620);
 
-        if (a) {
-            robotBase.holdR.setPosition(0.1);
-            robotBase.holdL.setPosition(0.8);
-        }
-        else {
-            robotBase.holdR.setPosition(0.5);
-            robotBase.holdL.setPosition(0.5);
+        if (gamepad2.right_trigger>0.2) {
+            d.setPower(gamepad1.right_trigger);
+        } else if (gamepad2.left_trigger>0.2) {
+            d.setPower(-gamepad1.left_trigger);
         }
 
-        if (gamepad1.dpad_up) {
-            robotBase.liftR.setPower(1);
-            robotBase.liftL.setPower(1);
-        } else if (gamepad1.dpad_down) {
-            robotBase.liftR.setPower(-1);
-            robotBase.liftL.setPower(-1);
-        } else {
-            robotBase.liftR.setPower(0);
-            robotBase.liftL.setPower(0);
-        }*/
+        if (gamepad1.a) {
+            e.setPower(1);
+        } else if (gamepad1.b) {
+            e.setPower(-1);
+        } else if (gamepad1.x) {
+            e.setPower(0);
+        }
+
         telemetry.addData("back left: ", driveBase.backLeft.getCurrentPosition());
         telemetry.addData("back right: ", driveBase.backRight.getCurrentPosition());
         telemetry.addData("front left: ", driveBase.frontLeft.getCurrentPosition());
         telemetry.addData("front right: ", driveBase.frontRight.getCurrentPosition());
+        telemetry.addData("f", f);
+        telemetry.addData("encoder", b.getCurrentPosition());
+        telemetry.addData("error", error);
         telemetry.update();
     }
 

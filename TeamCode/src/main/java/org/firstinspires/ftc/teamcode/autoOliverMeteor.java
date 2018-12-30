@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.camera.VisionBaseOliver;
+
 @Autonomous(name="Meteor Basic", group = "test")
 public class autoOliverMeteor extends LinearOpMode {
 

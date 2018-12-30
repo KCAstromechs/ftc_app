@@ -1,10 +1,10 @@
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-@TeleOp(name="Oliver Teleop")
-public class teleopOliver extends OpMode {
+@TeleOp(name="Slurp Teleop")
+public class teleopSlurpieBoi extends OpMode {
 
     //init vars
     float left, right, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
@@ -12,6 +12,14 @@ public class teleopOliver extends OpMode {
     DriveBaseOliver driveBase;
     RobotBaseOliver robotBase;
     Toggle toggleA, toggleY;
+
+    float armLength = 32;
+    float strafeSpeed = 54.7f;
+    float turnSpeed = 2.15f;
+    float turnFactorL;
+    float turnFactorR;
+    float strafe;
+
 
     @Override
     public void init() {
@@ -24,49 +32,33 @@ public class teleopOliver extends OpMode {
 
     @Override
     public void loop() {
-
+        strafe = 0;
 
         left = (Math.abs(gamepad1.left_stick_y) < 0.05) ? 0 : gamepad1.left_stick_y;
         right = (Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y;
         leftT = (Math.abs(gamepad1.left_trigger) < 0.05) ? 0 : gamepad1.left_trigger;
         rightT = (Math.abs(gamepad1.right_trigger) < 0.05) ? 0 : gamepad1.right_trigger;
 
-        frontLeftPower = left - rightT + leftT;
-        backLeftPower = left + rightT - leftT;
-        frontRightPower = right + rightT - leftT;
-        backRightPower = right - rightT + leftT;
+        if(left != 0) turnFactorL = (float) ((360/turnSpeed)/((armLength*2*Math.PI)/(strafeSpeed*left))); else turnFactorL=0;
+
+        if(right != 0) turnFactorL = (float) ((360/turnSpeed)/((armLength*2*Math.PI)/(strafeSpeed*right))); else turnFactorR=0;
+
+        strafe -= left;
+        strafe += right;
+        strafe -= leftT;
+        strafe += rightT;
+
+
+        frontLeftPower = (left*turnFactorL) - strafe;
+        backLeftPower = (left*turnFactorL) + strafe;
+        frontRightPower = (right*turnFactorR) + strafe;
+        backRightPower = (right*turnFactorR) - strafe;
 
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        driveBase.updateDriveMotors(frontLeftPower/3, frontRightPower/3, backLeftPower/3, backRightPower/3);
+        driveBase.updateDriveMotors(frontLeftPower/2, frontRightPower/2, backLeftPower/2, backRightPower/2);
 
-        /*a = toggleA.update(gamepad1.a);
-        y = toggleY.update(gamepad1.y);
 
-        if (y)
-            robotBase.latch.setPosition(0.75);
-        else
-            robotBase.latch.setPosition(0.45);
-
-        if (a) {
-            robotBase.holdR.setPosition(0.1);
-            robotBase.holdL.setPosition(0.8);
-        }
-        else {
-            robotBase.holdR.setPosition(0.5);
-            robotBase.holdL.setPosition(0.5);
-        }
-
-        if (gamepad1.dpad_up) {
-            robotBase.liftR.setPower(1);
-            robotBase.liftL.setPower(1);
-        } else if (gamepad1.dpad_down) {
-            robotBase.liftR.setPower(-1);
-            robotBase.liftL.setPower(-1);
-        } else {
-            robotBase.liftR.setPower(0);
-            robotBase.liftL.setPower(0);
-        }*/
         telemetry.addData("back left: ", driveBase.backLeft.getCurrentPosition());
         telemetry.addData("back right: ", driveBase.backRight.getCurrentPosition());
         telemetry.addData("front left: ", driveBase.frontLeft.getCurrentPosition());

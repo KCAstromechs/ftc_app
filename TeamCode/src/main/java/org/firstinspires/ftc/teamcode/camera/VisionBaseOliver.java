@@ -1,9 +1,10 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.vuforia.CameraDevice;
 import com.vuforia.Image;
 import com.vuforia.PIXEL_FORMAT;
@@ -19,31 +20,16 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CameraVision {
-
-    /*
-    Hey so this is our camera analysis code
-    Two minerals need to be visible in the camera's view
-    If you can see the left mineral (from the camera's perspective), pass the constructor "true"
-    If you can see the right mineral (from the camera's perspective), pass the constructor "false"
-    You need to pass the x and y values for the part of the picture that will be analysed.
-    TODO make the constructor draw a rectangle on the screen
-     */
+public class VisionBaseOliver {
 
     private VuforiaLocalizer vuforia;
+    boolean speedControl, debug;
+    OpMode callingOpMode;
 
-    private boolean leftMineralVisible;
-
-    private int yStart, yMax, xStart, xMax;
-
-    public CameraVision (boolean leftMineralVisible, int yStart, int yMax, int xStart, int xMax) {
-
-        this.yStart = yStart;
-        this.yMax = yMax;
-        this.xStart = xStart;
-        this.xMax = xMax;
-
-        this.leftMineralVisible = leftMineralVisible;
+    public VisionBaseOliver(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
+        speedControl = _speedControl;
+        debug = _debug;
+        callingOpMode = _callingOpMode;
 
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
@@ -54,6 +40,8 @@ public class CameraVision {
         this.vuforia = ClassFactory.createVuforiaLocalizer(parameters);
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
         vuforia.setFrameQueueCapacity(1);
+
+
     }
 
     public enum MINERALS {
@@ -62,10 +50,13 @@ public class CameraVision {
         RIGHT
     }
 
-    public MINERALS analyzeSample () throws InterruptedException {
+    public MINERALS analyzeSample(int yStart, int yMax, int xStart, int xMax) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
         int idx = 0;                                //Ensures we get correct image type from Vuforia
 
+        System.out.println("timestamp before getting image");
+        callingOpMode.telemetry.addData("timestamp ", "before getting image");
+        callingOpMode.telemetry.update();
         //Take an image from Vuforia in the correct format
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
         for (int i = 0; i < frame.getNumImages(); i++) {
@@ -79,6 +70,10 @@ public class CameraVision {
         Image image = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
 
+        //Origin: top right of image (current guess)
+
+
+
         //Loop through every pixel column
         int h = image.getHeight();
         int w = image.getWidth();
@@ -87,6 +82,9 @@ public class CameraVision {
         int gIDX;
         int bIDX;
 
+        System.out.println("timestamp before processing loop");
+        callingOpMode.telemetry.addData("timestamp ", "before processing image");
+        callingOpMode.telemetry.update();
         long timeStartAnalysis = System.currentTimeMillis();
 
         int avgGoldPos = 0;
@@ -145,6 +143,10 @@ public class CameraVision {
 
         double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis)/1000;
 
+        callingOpMode.telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
+        callingOpMode.telemetry.update();
+        System.out.println("timestamp after processing loop, before save pic/grab picto");
+
         CameraDevice.getInstance().setFlashTorchMode(false);
 
         //save picture block
@@ -201,19 +203,42 @@ public class CameraVision {
             }
         }
 
+        System.out.println("timestamp after save pic");
+        callingOpMode.telemetry.addData("timestamp ", "after save pic");
+        callingOpMode.telemetry.update();
+
+
+
         if(numOfGold!=0) avgGoldPos = (int) (sumGoldPos/numOfGold);
+        String goldLocResult = "";
 
 
         if (numOfGold > 100) {
-            if(avgGoldPos<(image.getWidth()/2)) {
-                if (leftMineralVisible) return MINERALS.LEFT; else return MINERALS.CENTER;
+            if(avgGoldPos<630) {
+                return MINERALS.LEFT;
             }
             else {
-                if (leftMineralVisible) return MINERALS.CENTER; else return MINERALS.RIGHT;
+                return MINERALS.CENTER;
             }
         }
         else {
-            if (leftMineralVisible) return MINERALS.RIGHT; else return MINERALS.LEFT;
+            return MINERALS.RIGHT;
         }
+
     }
-}
+    public static ByteBuffer cloneByteBuffer(final ByteBuffer original) {
+        // Create clone with same capacity as original.
+        final ByteBuffer clone = (original.isDirect()) ?
+                ByteBuffer.allocateDirect(original.capacity()) :
+                ByteBuffer.allocate(original.capacity());
+
+        // Create a read-only copy of the original.
+        // This allows reading from the original without modifying it.
+        final ByteBuffer readOnlyCopy = original.asReadOnlyBuffer();
+
+        // Flip and read from the original.
+        readOnlyCopy.flip();
+        clone.put(readOnlyCopy);
+
+        return clone;
+    }}

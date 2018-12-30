@@ -45,7 +45,7 @@ public class DriveBaseOliver implements SensorEventListener {
 
     protected boolean hasBeenZeroed= false;
 
-    private float zRotation;
+    float zRotation;
 
     public DriveBaseOliver(boolean _speedControl, boolean _debug, OpMode _callingOpMode){
         speedControl = _speedControl;

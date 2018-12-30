@@ -1,14 +1,13 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.camera;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.vuforia.CameraDevice;
-import com.vuforia.Image;
-import com.vuforia.PIXEL_FORMAT;
-import com.vuforia.Vuforia;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.vuforia.*;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
@@ -20,16 +19,18 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class VisionBaseOliver {
+/**
+ * Created by N2Class1 on 9/9/2018.
+ */
+
+@Disabled
+@Autonomous(name="Graphical image saver")
+public class testVisionFilters extends LinearOpMode {
 
     private VuforiaLocalizer vuforia;
-    boolean speedControl, debug;
-    OpMode callingOpMode;
 
-    public VisionBaseOliver(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
-        speedControl = _speedControl;
-        debug = _debug;
-        callingOpMode = _callingOpMode;
+    @Override
+    public void runOpMode() throws InterruptedException {
 
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(com.qualcomm.ftcrobotcontroller.R.id.cameraMonitorViewId);
         parameters.vuforiaLicenseKey = "Ac8xsqH/////AAAAGcG2OeE2NECwo7mM5f9KX1RKmDT79NqkIHc/ATgW2+loN9Fr8fkfb6jE42RZmiRYeei1FvM2M3kUPdl53j" +
@@ -41,22 +42,17 @@ public class VisionBaseOliver {
         Vuforia.setFrameFormat(PIXEL_FORMAT.RGB888, true);
         vuforia.setFrameQueueCapacity(1);
 
+        waitForStart();
 
-    }
-
-    public enum MINERALS {
-        LEFT,
-        CENTER,
-        RIGHT
-    }
-
-    public MINERALS analyzeSample(int yStart, int yMax, int xStart, int xMax) throws InterruptedException {
         int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
+        int totalBlue = 1;                          //Total number of blue pixels to help find blue side location
+        int totalRed = 1;                           //Total number of red pixels to help find red side location
         int idx = 0;                                //Ensures we get correct image type from Vuforia
+        float minRGB, maxRGB;
 
         System.out.println("timestamp before getting image");
-        callingOpMode.telemetry.addData("timestamp ", "before getting image");
-        callingOpMode.telemetry.update();
+        telemetry.addData("timestamp ", "before getting image");
+        telemetry.update();
         //Take an image from Vuforia in the correct format
         VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
         for (int i = 0; i < frame.getNumImages(); i++) {
@@ -69,10 +65,11 @@ public class VisionBaseOliver {
         //Create an instance of the image and then of the pixels
         Image image = frame.getImage(idx);
         ByteBuffer px = image.getPixels();
+        ByteBuffer img2 = cloneByteBuffer(px);
 
         //Origin: top right of image (current guess)
 
-
+        
 
         //Loop through every pixel column
         int h = image.getHeight();
@@ -83,53 +80,60 @@ public class VisionBaseOliver {
         int bIDX;
 
         System.out.println("timestamp before processing loop");
-        callingOpMode.telemetry.addData("timestamp ", "before processing image");
-        callingOpMode.telemetry.update();
+        telemetry.addData("timestamp ", "before processing image");
+        telemetry.update();
         long timeStartAnalysis = System.currentTimeMillis();
 
         int avgGoldPos = 0;
         int sumGoldPos = 0;
         int numOfGold =  0;
 
-        for (int y = yStart; y < yMax; y++) {
+        for (int i = 0; i < h; i++) {
 
 //            System.out.println("loop #" + i);
             //If the bot stops you should really stop.
             if(Thread.interrupted()) break;
 
             //Loop through a certain number of rows to cover a certain area of the image
-            for (int x = xStart; x < xMax; x++) { //925, 935
+            for (int j = 0; j < w; j++) { //925, 935
 
-                rIDX = y * w * 3 + (x * 3);
-                gIDX = y * w * 3 + (x * 3) + 1;
-                bIDX = y * w * 3 + (x * 3) + 2;
+                rIDX = i * w * 3 + (j * 3);
+                gIDX = i * w * 3 + (j * 3) + 1;
+                bIDX = i * w * 3 + (j * 3) + 2;
 
                 //Take the RGB vals of current pix
                 thisR = px.get(rIDX) & 0xFF;
                 thisG = px.get(gIDX) & 0xFF;
                 thisB = px.get(bIDX) & 0xFF;
 
+
+                //Convert the RGB vals into S
+                minRGB = Math.min(thisR, Math.min(thisB, thisG)) + 1;
+                maxRGB = Math.max(thisR, Math.max(thisB, thisG)) + 1;
+                //System.out.println("Saturation: " + thisS);
+
+                //We now have the colors (one byte each) for any pixel, (j, i) so we can add to the totals
+                //if (thisS >= 0.85) {
+                //                  System.out.println("Jewel pixel found");
                 if(thisR>180 && thisG>130 & thisB<100) {
                     px.put(rIDX, (byte) 0);
                     px.put(gIDX, (byte) 255);
                     px.put(bIDX, (byte) 0);
                     numOfGold++;
-                    sumGoldPos+=x;
+                    sumGoldPos+=j;
 
                 }
-                if((thisR>230 && thisG>230 && thisB>230) || Math.abs(x - 630) < 10) {
+                if(thisR>230 && thisG>230 && thisB>230) {
                     px.put(rIDX, (byte) 0);
                     px.put(gIDX, (byte) 0);
                     px.put(bIDX, (byte) 0);
                 }
-                //X AXIS
-                if(Math.abs(y - yMax) < 10) {
+                if(i < 30) {
                     px.put(rIDX, (byte) 0);
                     px.put(gIDX, (byte) 0);
                     px.put(bIDX, (byte) 100);
                 }
-                //Y AXIS
-                if(Math.abs(x - xMax) < 10) {
+                if(j < 30) {
                     px.put(rIDX, (byte) 100);
                     px.put(gIDX, (byte) 0);
                     px.put(bIDX, (byte) 0);
@@ -137,14 +141,25 @@ public class VisionBaseOliver {
                 //}
             }
         }
+        avgGoldPos = (int) (sumGoldPos/numOfGold);
+        String goldLocResult = "";
 
+        if(avgGoldPos<420) {
+            goldLocResult = "Gold is on the left side";
+        }
+        else if(avgGoldPos<840) {
+            goldLocResult = "Gold is middle";
+        }
+        else {
+            goldLocResult = "Gold is on the right side";
+        }
 
         long timeStopAnalysis = System.currentTimeMillis();
 
-        double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis)/1000;
+        double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis) /1000;
 
-        callingOpMode.telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
-        callingOpMode.telemetry.update();
+        telemetry.addData("timestamp ", "after processing loop before save pic/grab picto");
+        telemetry.update();
         System.out.println("timestamp after processing loop, before save pic/grab picto");
 
         CameraDevice.getInstance().setFlashTorchMode(false);
@@ -204,27 +219,14 @@ public class VisionBaseOliver {
         }
 
         System.out.println("timestamp after save pic");
-        callingOpMode.telemetry.addData("timestamp ", "after save pic");
-        callingOpMode.telemetry.update();
+        telemetry.addData("timestamp ", "after save pic");
+        telemetry.update();
 
-
-
-        if(numOfGold!=0) avgGoldPos = (int) (sumGoldPos/numOfGold);
-        String goldLocResult = "";
-
-
-        if (numOfGold > 100) {
-            if(avgGoldPos<630) {
-                return MINERALS.LEFT;
-            }
-            else {
-                return MINERALS.CENTER;
-            }
-        }
-        else {
-            return MINERALS.RIGHT;
-        }
-
+        //telemetry.addData("totalBlue: ", totalBlue);
+        //telemetry.addData("totalRed: ", totalRed);
+        telemetry.addLine(goldLocResult);
+        telemetry.update();
+        sleep(12000);
     }
     public static ByteBuffer cloneByteBuffer(final ByteBuffer original) {
         // Create clone with same capacity as original.
@@ -241,4 +243,5 @@ public class VisionBaseOliver {
         clone.put(readOnlyCopy);
 
         return clone;
-    }}
+    }
+}
