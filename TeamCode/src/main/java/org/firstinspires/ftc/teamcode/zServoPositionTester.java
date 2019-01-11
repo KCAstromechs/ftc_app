@@ -5,22 +5,27 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.Servo;
 
-@Disabled
 @TeleOp(name="servoPositionTester", group="zzzzzzz")
 public class zServoPositionTester extends OpMode {
 
     //init vars
     Servo a;
 
+    boolean b;
+
     double servoPos;
 
     @Override
     public void init() {
-        a = hardwareMap.servo.get("flap");    //change me to test different servos
+        a = hardwareMap.servo.get("mark");    //change me to test different servos
     }
 
     @Override
     public void loop() {
+        if(!b){
+            servoPos=a.getPosition();
+            b = true;
+        }
 
         if(gamepad1.left_bumper){
             servoPos-=0.01;
