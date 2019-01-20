@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.Mycroft_NOVA;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -17,6 +18,7 @@ import java.util.LinkedList;
 //TODO Add infrastrucure for mycroft-app controller communication
 //  TODO Animate the mycroft eyes themselves
 
+@Disabled
 @TeleOp (name="animated eyes TeleOp", group="TeleOp")
 public class MYCROFT_animatedEyes extends OpMode {
 

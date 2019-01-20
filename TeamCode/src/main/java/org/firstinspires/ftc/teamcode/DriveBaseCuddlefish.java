@@ -5,6 +5,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
@@ -25,7 +26,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
 
     double ticksPerInch = ((ticksPerRotation)/(wheelDiameter * Math.PI));
 
-    private static final double P_DRIVE_COEFF = 0.02;
+    protected static final double P_DRIVE_COEFF = 0.02;
 
     static final double driveSpeed = 0.6;
 
@@ -105,7 +106,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
         power = Range.clip(power, -1.0, 1.0);
 
 
-        while (Math.abs(target) > Math.abs(encoderMotor.getCurrentPosition())  && !Thread.interrupted()) {
+        while (Math.abs(target) > Math.abs(encoderMotor.getCurrentPosition())  && ((LinearOpMode) callingOpMode).opModeIsActive()) {
 
             error = heading - zRotation;
 
@@ -172,7 +173,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
 
             //While we're not within our error, and we haven't overshot, and the bot is running
             while(Math.abs(normalize360(zRotation + wrapFix)- shiftedTurnHeading) > error &&
-                    Math.abs(cclockwise) >= Math.abs(clockwise) && !Thread.interrupted()) {
+                    Math.abs(cclockwise) >= Math.abs(clockwise) && ((LinearOpMode) callingOpMode).opModeIsActive()) {
 
                 //Figure out how far the robot would have to turn in counterclockwise & clockwise directions
                 cclockwise = zRotation - turnHeading;
@@ -199,7 +200,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
 
             //While we're not within our error, and we haven't overshot, and the bot is running
             while (Math.abs(normalize360(zRotation + wrapFix) - shiftedTurnHeading) > error &&
-                    Math.abs(clockwise) > Math.abs(cclockwise) && !Thread.interrupted()) {
+                    Math.abs(clockwise) > Math.abs(cclockwise) && ((LinearOpMode) callingOpMode).opModeIsActive()) {
 
                 //Figure out how far the robot would have to turn in counterclockwise & clockwise directions
                 cclockwise = zRotation - turnHeading;
@@ -238,7 +239,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
         power = Range.clip(power, -1.0, 1.0);
 
 
-        while (Math.abs(target) > Math.abs(encoderMotor.getCurrentPosition())  && !Thread.interrupted()) {
+        while (Math.abs(target) > Math.abs(encoderMotor.getCurrentPosition())  && ((LinearOpMode) callingOpMode).opModeIsActive()) {
 
             error = heading - zRotation;
 
@@ -319,7 +320,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
     }
 
 
-    private float normalize360(float val) {
+    protected float normalize360(float val) {
         while (val > 360 || val < 0) {
 
             if (val > 360) {

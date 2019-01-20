@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.camera.VisionBaseCuddlefish;
 
-@Autonomous(name="Meteor Cuddlefish", group = "cuddlefish")
-public class autoCuddlefishMeteor extends LinearOpMode {
+@Autonomous(name="Meteor Cuddlefish Two Block", group = "cuddlefish")
+public class autoCuddlefishMeteorTwoBlock extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
@@ -24,7 +24,7 @@ public class autoCuddlefishMeteor extends LinearOpMode {
 
         driveBase.driveStraight(1.5, 0, -0.4);
 
-        VisionBaseCuddlefish.MINERALS result = camera.analyzeSample();
+        VisionBaseCuddlefish.MINERALS result = camera.analyzeSampleNoSave();
 
         driveBase.strafe(10, 0, 0.8);
 
@@ -42,7 +42,7 @@ public class autoCuddlefishMeteor extends LinearOpMode {
         if (result == VisionBaseCuddlefish.MINERALS.RIGHT) {
             driveBase.driveStraight(45, 0, false);
         } else if (result == VisionBaseCuddlefish.MINERALS.CENTER) {
-            driveBase.driveStraight(35, 0, false);
+            driveBase.driveStraight(34, 0, false);
         } else if (result == VisionBaseCuddlefish.MINERALS.LEFT) {
             driveBase.driveStraight(25, 0, false);
         }
@@ -53,14 +53,36 @@ public class autoCuddlefishMeteor extends LinearOpMode {
 
         robotBase.deployMarker();
 
-        sleep(1414);
+        sleep(1414);/*
 
+        driveBase.strafe(8, 225, -0.8);
+
+        driveBase.turn(265, 0.6);
+
+        if (result == VisionBaseCuddlefish.MINERALS.RIGHT) {
+            //driveBase.driveStraight(45, 270, false);
+        } else if (result == VisionBaseCuddlefish.MINERALS.CENTER) {
+            driveBase.driveStraight(10, 270, false);
+        } else if (result == VisionBaseCuddlefish.MINERALS.LEFT) {
+            driveBase.driveStraight(20, 270, false);
+        }
+
+        driveBase.strafe(10, 270, 0.8);
+        driveBase.strafe(10, 270, -0.8);*/
+        if (result == VisionBaseCuddlefish.MINERALS.RIGHT) {
+            driveBase.turn(175, 0.8);
+            driveBase.driveStraight(18, 165, false);
+            driveBase.driveStraight(18, 165, true);
+        } else if (result == VisionBaseCuddlefish.MINERALS.CENTER) {
+            driveBase.turn(205, 0.8);
+            driveBase.driveStraight(18, 195, false);
+            driveBase.driveStraight(18, 195, true);
+        } else if (result == VisionBaseCuddlefish.MINERALS.LEFT) {
+            driveBase.driveStraight(24, 225, false);
+            driveBase.driveStraight(24, 225, true);
+        }
         driveBase.turn(305, 0.6);
 
-        //driveBase.driveStraight(42, 310, true);
-
-        //this is the beginning of the end
-
-        driveBase.driveStraight(42, 310, true, -1600, 0);
+        driveBase.driveStraight(42, 315, true, -1600, 0);
     }
 }

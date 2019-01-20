@@ -16,7 +16,7 @@ public class teleopWeldedFrame extends OpMode {
     private double error = 0;
     private boolean t = false;
     private int turbo = 3;
-    private int turbo2 = 4;
+    private int turbo2 = 3;
 
 
     @Override
@@ -43,6 +43,8 @@ public class teleopWeldedFrame extends OpMode {
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         climb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        extender.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        extender.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     @Override
@@ -53,7 +55,7 @@ public class teleopWeldedFrame extends OpMode {
         }
 
         turbo = 3;
-        turbo2 = 4;
+        turbo2 = 3;
 
         left = (Math.abs(gamepad1.left_stick_y) < 0.05) ? 0 : gamepad1.left_stick_y;
         right = (Math.abs(gamepad1.right_stick_y) < 0.05) ? 0 : gamepad1.right_stick_y;
@@ -87,16 +89,16 @@ public class teleopWeldedFrame extends OpMode {
             collector.setPower(0);
         }
 
-        if (gamepad2.right_bumper) turbo2 --;
-        if (gamepad2.left_bumper) turbo2 --;
+        if (gamepad2.right_bumper) turbo2 ++;
+        if (gamepad2.left_bumper) turbo2 ++;
 
         if(right2==0) {
             error = f - lift.getCurrentPosition();
+            lift.setPower(error/1620);
         } else {
             f = (lift.getCurrentPosition());
-            error = 0;
+            lift.setPower((-right2*turbo2)/5);
         }
-        lift.setPower(Math.min((error/1620)-right2, (turbo2/4)));
 
         if(gamepad1.dpad_down){
             climb.setPower(-1);
@@ -113,6 +115,7 @@ public class teleopWeldedFrame extends OpMode {
         telemetry.addData("power", lift.getPower());
         telemetry.addData("up", gamepad1.dpad_up);
         telemetry.addData("down", gamepad1.dpad_down);
+        telemetry.addData("extender", extender.getCurrentPosition());
         telemetry.update();
     }
 

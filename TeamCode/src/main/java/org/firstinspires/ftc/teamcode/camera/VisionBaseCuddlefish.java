@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Environment;
 
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.vuforia.CameraDevice;
 import com.vuforia.Image;
@@ -102,7 +103,7 @@ public class VisionBaseCuddlefish {
 
 //            System.out.println("loop #" + i);
             //If the bot stops you should really stop.
-            if(Thread.interrupted()) break;
+            if(!(((LinearOpMode) callingOpMode).opModeIsActive())) break;
 
             //Loop through a certain number of rows to cover a certain area of the image
             for (int x = xStart; x < xMax; x++) { //925, 935
@@ -155,6 +156,166 @@ public class VisionBaseCuddlefish {
         //save picture block
         boolean graphicalDiagnostic = true;
         boolean bSavePicture = true;
+        if (bSavePicture) {
+            // Reset the pixel pointer to the start of the image
+            //  px = image.getPixels();
+            // Create a buffer to hold 32-bit image dataa and fill it
+            int bmpData[] = new int[w * h];
+            int pixel;
+            int index = 0;
+            int x,y;
+            if(graphicalDiagnostic) {
+                for (y = 0; y < h; y++) {
+                    for (x = 0; x < w; x++) {
+                        thisR = px.get() & 0xFF;
+                        thisG = px.get() & 0xFF;
+                        thisB = px.get() & 0xFF;
+                        bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                        index++;
+                    }
+                }
+            }
+            else {
+                for (y = 0; y < h; y++) {
+                    for (x = 0; x < w; x++) {
+                        thisR = px.get() & 0xFF;
+                        thisG = px.get() & 0xFF;
+                        thisB = px.get() & 0xFF;
+                        bmpData[index] = Color.rgb(thisR, thisG, thisB);
+                        index++;
+                    }
+                }
+            }
+            // Now create a bitmap object from the buffer
+            Bitmap bmp = Bitmap.createBitmap(bmpData, w, h, Bitmap.Config.ARGB_8888);
+            // And save the bitmap to the file system
+            // NOTE:  AndroidManifest.xml needs <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+            try {
+                //to convert Date to String, use format method of SimpleDateFormat class.
+                DateFormat dateFormat = new SimpleDateFormat("mm-dd__hh-mm-ss");
+                String strDate = dateFormat.format(new Date());
+                String path = Environment.getExternalStorageDirectory() + "/Snapshot__" + strDate + ".png";
+                System.out.println("Snapshot filename" + path);
+                File file = new File(path);
+                file.createNewFile();
+                FileOutputStream fos = new FileOutputStream(file);
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                fos.flush();
+                fos.close();
+            } catch (Exception e) {
+                System.out.println("Snapshot exception" + e.getStackTrace().toString());
+            }
+        }
+
+        if(numOfGold!=0) avgGoldPos = (int) (sumGoldPos/numOfGold);
+
+        callingOpMode.telemetry.addData("#gold", numOfGold);
+        callingOpMode.telemetry.addData("avgPosGold", avgGoldPos);
+        callingOpMode.telemetry.addData("yMax", image.getHeight());
+        callingOpMode.telemetry.addData("xMax", image.getWidth());
+
+
+        if (numOfGold > 100) {
+            if(avgGoldPos<(image.getWidth()/2)) {
+                if (leftMineralVisible) return MINERALS.CENTER; else return MINERALS.RIGHT;
+            }
+            else {
+                if (leftMineralVisible) return MINERALS.LEFT; else return MINERALS.CENTER;
+            }
+        }
+        else {
+            if (leftMineralVisible) return MINERALS.RIGHT; else return MINERALS.LEFT;
+        }
+    }
+
+    public MINERALS analyzeSampleNoSave () throws InterruptedException {
+        int thisR, thisB, thisG;                    //RGB values of current pixel to translate into HSV
+        int idx = 0;                                //Ensures we get correct image type from Vuforia
+
+        //Take an image from Vuforia in the correct format
+        VuforiaLocalizer.CloseableFrame frame = vuforia.getFrameQueue().take();
+        for (int i = 0; i < frame.getNumImages(); i++) {
+            if (frame.getImage(i).getFormat() == PIXEL_FORMAT.RGB888) {
+                idx = i;
+                break;
+            }
+        }
+
+        //Create an instance of the image and then of the pixels
+        Image image = frame.getImage(idx);
+        ByteBuffer px = image.getPixels();
+
+        //Loop through every pixel column
+        int h = image.getHeight();
+        int w = image.getWidth();
+
+        int rIDX;
+        int gIDX;
+        int bIDX;
+
+        long timeStartAnalysis = System.currentTimeMillis();
+
+        int avgGoldPos = 0;
+        int sumGoldPos = 0;
+        int numOfGold =  0;
+
+        for (int y = yStart; y < yMax; y++) {
+
+//            System.out.println("loop #" + i);
+            //If the bot stops you should really stop.
+            if(!(((LinearOpMode) callingOpMode).opModeIsActive())) break;
+
+            //Loop through a certain number of rows to cover a certain area of the image
+            for (int x = xStart; x < xMax; x++) { //925, 935
+
+                rIDX = y * w * 3 + (x * 3);
+                gIDX = y * w * 3 + (x * 3) + 1;
+                bIDX = y * w * 3 + (x * 3) + 2;
+
+                //Take the RGB vals of current pix
+                thisR = px.get(rIDX) & 0xFF;
+                thisG = px.get(gIDX) & 0xFF;
+                thisB = px.get(bIDX) & 0xFF;
+
+                if(thisR>180 && thisG>130 & thisB<100) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 255);
+                    px.put(bIDX, (byte) 0);
+                    numOfGold++;
+                    sumGoldPos+=x;
+
+                }
+                if((thisR>230 && thisG>230 && thisB>230) || Math.abs(x - 630) < 10) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 0);
+                }
+                //X AXIS
+                if(Math.abs(y - yMax) < 10) {
+                    px.put(rIDX, (byte) 0);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 100);
+                }
+                //Y AXIS
+                if(Math.abs(x - xMax) < 10) {
+                    px.put(rIDX, (byte) 100);
+                    px.put(gIDX, (byte) 0);
+                    px.put(bIDX, (byte) 0);
+                }
+                //}
+            }
+        }
+
+
+        long timeStopAnalysis = System.currentTimeMillis();
+
+        double timeForAnalysis = (timeStopAnalysis - timeStartAnalysis)/1000;
+
+        CameraDevice.getInstance().setFlashTorchMode(false);
+
+        //save picture block
+        boolean graphicalDiagnostic = true;
+        boolean bSavePicture = false;
         if (bSavePicture) {
             // Reset the pixel pointer to the start of the image
             //  px = image.getPixels();

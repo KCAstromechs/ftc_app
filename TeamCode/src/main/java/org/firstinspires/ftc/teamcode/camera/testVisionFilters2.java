@@ -29,7 +29,7 @@ import static java.lang.Class.*;
  * Created by me on 23/12/2018.
  */
 
-
+@Disabled
 @Autonomous(name="Graphical image saver 2")
 public class testVisionFilters2 extends LinearOpMode {
 

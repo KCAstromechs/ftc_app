@@ -10,7 +10,7 @@ public class autoCuddlefishRover extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        DriveBaseCuddlefish driveBase = new DriveBaseCuddlefish(false, true, this);
+        oscillationTest2 driveBase = new oscillationTest2(false, true, this);
         VisionBaseCuddlefish camera = new VisionBaseCuddlefish(false, this,100, 350, 0, 1280);
         RobotBaseCuddlefish robotBase = new RobotBaseCuddlefish(true, this);
 
@@ -29,27 +29,27 @@ public class autoCuddlefishRover extends LinearOpMode {
         driveBase.strafe(10, 0, 0.8);
 
         if (result == VisionBaseCuddlefish.MINERALS.LEFT) {
-            driveBase.driveStraight(6, 0, -0.8);
+            driveBase.driveStraight(10, 0, false);
         } else if (result == VisionBaseCuddlefish.MINERALS.RIGHT) {
-            driveBase.driveStraight(10, 0, 0.8);
+            driveBase.driveStraight(14, 0, true);
         } else if (result == VisionBaseCuddlefish.MINERALS.CENTER) {
-            driveBase.driveStraight(2, 0, 0.8);
+            driveBase.driveStraight(1, 0, 0.8);
         }
 
         driveBase.strafe(10, 0, 0.8);
         driveBase.strafe(12, 0, -0.8);
 
         if (result == VisionBaseCuddlefish.MINERALS.RIGHT) {
-            driveBase.driveStraight(34, 0, -0.8);
+            driveBase.driveStraight(45, 0, false);
         } else if (result == VisionBaseCuddlefish.MINERALS.CENTER) {
-            driveBase.driveStraight(24, 0, -0.8);
+            driveBase.driveStraight(35, 0, false);
         } else if (result == VisionBaseCuddlefish.MINERALS.LEFT) {
-            driveBase.driveStraight(13, 0, -0.8);
+            driveBase.driveStraight(25, 0, false);
         }
 
         driveBase.turn(40, 0.6);
 
-        driveBase.strafe(28, 40, 0.8);
+        driveBase.strafe(32, 40, 0.8);
 
         robotBase.deployMarker();
 
@@ -57,7 +57,7 @@ public class autoCuddlefishRover extends LinearOpMode {
 
         driveBase.turn(130, 0.6);
 
-        driveBase.driveStraight(34, 135, 0.8);
+        driveBase.driveStraight(38, 135, true, -1600, 0);
 
         //wuiowehrsagdior
     }
