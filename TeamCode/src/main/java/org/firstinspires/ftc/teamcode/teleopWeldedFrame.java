@@ -10,8 +10,7 @@ public class teleopWeldedFrame extends OpMode {
 
     //init vars
     private float left, right, left2, right2, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
-    private DcMotor frontRight, frontLeft, backRight, backLeft, extender, lift, climb;
-    private CRServo collector;
+    private DcMotor frontRight, frontLeft, backRight, backLeft, extender, lift, climb, collector;
     private double f = 0;
     private double error = 0;
     private boolean t = false;
@@ -26,7 +25,7 @@ public class teleopWeldedFrame extends OpMode {
         backRight = hardwareMap.dcMotor.get("backRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         extender = hardwareMap.dcMotor.get("extender");
-        collector = hardwareMap.crservo.get("collect");
+        collector = hardwareMap.dcMotor.ge  t("collect");
         lift = hardwareMap.dcMotor.get("lift");
         climb = hardwareMap.dcMotor.get("climb");
 

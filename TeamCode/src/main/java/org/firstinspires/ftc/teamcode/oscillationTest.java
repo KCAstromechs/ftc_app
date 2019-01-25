@@ -8,34 +8,28 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 @Autonomous(name="cup of tea")
 public class oscillationTest extends LinearOpMode {
 
-
+    boolean straight;
 
     @Override
     public void runOpMode() throws InterruptedException {
         oscillationTest2 driveBase = new oscillationTest2(false, true, this);
+
+        while(opModeIsActive()) {
+            if (gamepad1.a) {
+                straight = true;
+                break;
+            }
+            else if (gamepad1.b) {
+                straight = false;
+                break;
+            }
+        }
+
         waitForStart();
 
-        driveBase.driveStraight(1.5, 0, -0.4);
-
-
-        driveBase.strafe(10, 0, 0.8);
-
-        driveBase.driveStraight(1, 0, 0.8);
-
-        driveBase.strafe(10, 0, 0.8);
-        driveBase.strafe(12, 0, -0.8);
-
-        driveBase.driveStraight(30, 0, false);
-
-
-        driveBase.turn(40, 0.6);
-
-        driveBase.strafe(32, 40, 0.8);
-
-        sleep(1414);
-
-        driveBase.turn(130, 0.6);
-
-        driveBase.driveStraight(38, 135, true);
+        if (straight)
+            driveBase.driveStraight(18, 0, true);
+        else
+            driveBase.strafe(18, 0, 0.8);
     }
 }

@@ -13,16 +13,7 @@ public class testAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
 
-        //initialize all bot stuff
-       // RobotBaseOliver robotBase = new RobotBaseOliver();
-        DriveBaseOliver driveBase = new DriveBaseOliver(false, false, this);
-       // LooknBase[robot_name] looknBase = new LooknBase[robot_name]();
-        //robotBase.init(args if needed);
-       // looknBase.init(args if needed);
 
-        waitForStart();
 
-        driveBase.driveStraight(18, 0.5f);
-        driveBase.driveStraight(-18, 0.5f);
     }
 }
