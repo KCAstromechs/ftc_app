@@ -12,7 +12,7 @@ public class oscillationTest extends LinearOpMode {
 
     @Override
     public void runOpMode() throws InterruptedException {
-        oscillationTest2 driveBase = new oscillationTest2(false, true, this);
+        DriveBaseMarinaAdvanced driveBase = new DriveBaseMarinaAdvanced(false, true, this);
 
         while(opModeIsActive()) {
             if (gamepad1.a) {

@@ -5,8 +5,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
-@TeleOp(name="teleop cuttlefish")
-public class teleopWeldedFrame extends OpMode {
+@TeleOp(name="teleop marina")
+public class teleopMarina extends OpMode {
 
     //init vars
     private float left, right, left2, right2, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
@@ -25,7 +25,7 @@ public class teleopWeldedFrame extends OpMode {
         backRight = hardwareMap.dcMotor.get("backRight");
         backLeft = hardwareMap.dcMotor.get("backLeft");
         extender = hardwareMap.dcMotor.get("extender");
-        collector = hardwareMap.dcMotor.ge  t("collect");
+        collector = hardwareMap.dcMotor.get("collect");
         lift = hardwareMap.dcMotor.get("lift");
         climb = hardwareMap.dcMotor.get("climb");
 
@@ -78,14 +78,14 @@ public class teleopWeldedFrame extends OpMode {
         frontLeft.setPower((frontLeftPower*turbo)/5);
         backLeft.setPower((backLeftPower*turbo)/5);
 
-        extender.setPower(left2);
+        extender.setPower(-left2);
 
-        if(gamepad2.a){
-            collector.setPower(1);
-        } else if (gamepad2.b){
-            collector.setPower(-1);
-        } else if (gamepad2.x){
+        if(gamepad2.dpad_down){
             collector.setPower(0);
+        } else if (gamepad2.dpad_left){
+            collector.setPower(-1);
+        } else if (gamepad2.dpad_right){
+            collector.setPower(1);
         }
 
         if (gamepad2.right_bumper) turbo2 ++;
@@ -93,7 +93,7 @@ public class teleopWeldedFrame extends OpMode {
 
         if(right2==0) {
             error = f - lift.getCurrentPosition();
-            lift.setPower(error/1620);
+            lift.setPower(error/810);
         } else {
             f = (lift.getCurrentPosition());
             lift.setPower((-right2*turbo2)/5);

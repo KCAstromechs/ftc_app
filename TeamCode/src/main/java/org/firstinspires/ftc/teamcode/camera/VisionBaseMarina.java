@@ -21,7 +21,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class VisionBaseCuddlefish {
+public class VisionBaseMarina {
 
     /*
     Hey so this is our camera analysis code
@@ -41,7 +41,7 @@ public class VisionBaseCuddlefish {
     private OpMode callingOpMode;
 
 
-    public VisionBaseCuddlefish(boolean leftMineralVisible, OpMode _callingOpMode, int yStart, int yMax, int xStart, int xMax) {
+    public VisionBaseMarina(boolean leftMineralVisible, OpMode _callingOpMode, int yStart, int yMax, int xStart, int xMax) {
 
         this.yStart = yStart;
         this.yMax = yMax;

@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import static android.content.Context.SENSOR_SERVICE;
 
-public class DriveBaseCuddlefish implements SensorEventListener {
+public class DriveBaseMarina implements SensorEventListener {
     DcMotor frontRight, frontLeft, backRight, backLeft, encoderMotor;
 
     OpMode callingOpMode;
@@ -46,7 +46,7 @@ public class DriveBaseCuddlefish implements SensorEventListener {
 
     float zRotation;
 
-    public DriveBaseCuddlefish(boolean _speedControl, boolean _debug, OpMode _callingOpMode){
+    public DriveBaseMarina(boolean _speedControl, boolean _debug, OpMode _callingOpMode){
         speedControl = _speedControl;
         debug = _debug;
         callingOpMode = _callingOpMode;

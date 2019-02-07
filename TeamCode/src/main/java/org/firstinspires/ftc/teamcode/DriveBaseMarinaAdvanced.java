@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
-public class oscillationTest2 extends DriveBaseCuddlefish {
+public class DriveBaseMarinaAdvanced extends DriveBaseMarina {
 
     double k = 0.001;
     double d = 0.08;
@@ -13,7 +13,7 @@ public class oscillationTest2 extends DriveBaseCuddlefish {
 
     DcMotor extender, lift;
 
-    public oscillationTest2(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
+    public DriveBaseMarinaAdvanced(boolean _speedControl, boolean _debug, OpMode _callingOpMode) {
         super(_speedControl, _debug, _callingOpMode);
         lift = callingOpMode.hardwareMap.dcMotor.get("lift");
         extender = callingOpMode.hardwareMap.dcMotor.get("extender");
@@ -106,7 +106,7 @@ public class oscillationTest2 extends DriveBaseCuddlefish {
         Thread.sleep(500);
     }
     
-    public void driveStraight(double inches, float heading, boolean powerD, double armTarget, double extendTarget)  throws InterruptedException {
+    public void driveStraight(double inches, float heading, float heading2, boolean powerD, double armTarget, double extendTarget)  throws InterruptedException {
         double error;
         double errorDLast;
         double errorD;
@@ -121,7 +121,9 @@ public class oscillationTest2 extends DriveBaseCuddlefish {
         double derivativeA;
         long loops = 0;
         heading = (int) normalize360(heading);
-        double targetT = callingOpMode.getRuntime()+3;
+        heading2 = (int) normalize360(heading2);
+        boolean newheading = false;
+        double targetT = callingOpMode.getRuntime()+4;
 
         resetEncoders(false);
         int target;
@@ -140,6 +142,11 @@ public class oscillationTest2 extends DriveBaseCuddlefish {
 
         while (((LinearOpMode) callingOpMode).opModeIsActive()) {
 
+            if(Math.abs(encoderMotor.getCurrentPosition())>900 && !newheading){
+                heading = heading2;
+                newheading = true;
+            }
+
             errorDLast = errorD;
 
             errorD = target - encoderMotor.getCurrentPosition();
@@ -149,7 +156,7 @@ public class oscillationTest2 extends DriveBaseCuddlefish {
             while (error > 180) error = (error - 360);
             while (error <= -180) error = (error + 360);
 
-            correction = Range.clip(error * DriveBaseCuddlefish.P_DRIVE_COEFF, -1, 1);
+            correction = Range.clip(error * DriveBaseMarina.P_DRIVE_COEFF, -1, 1);
 
             derivative = (errorD-errorDLast)/10.;
 

@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import static java.lang.Thread.sleep;
 
-public class RobotBaseCuddlefish implements SensorEventListener {
+public class RobotBaseMarina implements SensorEventListener {
     //variables for gyro operation
     private float zero;
     private float rawGyro;
@@ -35,7 +35,7 @@ public class RobotBaseCuddlefish implements SensorEventListener {
     public DcMotor climb;
     public Servo mark;
 
-    public RobotBaseCuddlefish(boolean _debug, OpMode _callingOpMode) {
+    public RobotBaseMarina(boolean _debug, OpMode _callingOpMode) {
         debug = _debug;
         callingOpMode = _callingOpMode;
 
