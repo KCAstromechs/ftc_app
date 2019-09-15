@@ -42,7 +42,7 @@ public class RobotBaseMarina implements SensorEventListener {
         mark = callingOpMode.hardwareMap.servo.get("mark");
         climb = callingOpMode.hardwareMap.dcMotor.get("climb");
 
-        mark.setPosition(0);
+        mark.setPosition(0.1);
 
         climb.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         climb.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -53,7 +53,7 @@ public class RobotBaseMarina implements SensorEventListener {
     public void land () throws InterruptedException {
         climb.setPower(1);
         while(true){
-            if (!(climb.getCurrentPosition() < 12000)) break;
+            if (!(climb.getCurrentPosition() < 11800)) break;
         }
         climb.setPower(0);
     }

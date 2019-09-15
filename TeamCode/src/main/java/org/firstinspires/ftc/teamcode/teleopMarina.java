@@ -2,8 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @TeleOp(name="teleop marina")
 public class teleopMarina extends OpMode {
@@ -11,10 +11,14 @@ public class teleopMarina extends OpMode {
     //init vars
     private float left, right, left2, right2, leftT, rightT, frontLeftPower, backLeftPower, frontRightPower, backRightPower;
     private DcMotor frontRight, frontLeft, backRight, backLeft, extender, lift, climb, collector;
+    private Servo led;
     private double f = 0;
     private double error = 0;
+    private double targetT = 0;
     private boolean t = false;
-    private int turbo = 3;
+    private boolean jInput = false;
+    private boolean setColor = true;
+    private int turbo = 9;
     private int turbo2 = 3;
 
 
@@ -29,8 +33,11 @@ public class teleopMarina extends OpMode {
         lift = hardwareMap.dcMotor.get("lift");
         climb = hardwareMap.dcMotor.get("climb");
 
+        led = hardwareMap.servo.get("elleedee");
+
         frontRight.setDirection(DcMotor.Direction.REVERSE);
         backRight.setDirection(DcMotor.Direction.REVERSE);
+        extender.setDirection(DcMotor.Direction.REVERSE);
 
         frontRight.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontLeft.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
@@ -48,12 +55,26 @@ public class teleopMarina extends OpMode {
 
     @Override
     public void loop() {
+        if(!jInput){
+            if(gamepad1.left_stick_y>0.1 || gamepad2.left_stick_y>0.1 || gamepad1.right_stick_y>0.1 || gamepad2.right_stick_y>0.1){
+                jInput = true;
+                targetT = getRuntime()+90;
+            }
+        } else if (setColor) {
+            if (getRuntime() > targetT) {
+                led.setPosition(0.749);
+                setColor = false;
+            }
+        } else if (getRuntime()>targetT+20){
+            led.setPosition(0.66575);
+        }
+
         if(!t){
             f = lift.getCurrentPosition();
             t = true;
         }
 
-        turbo = 3;
+        turbo = 9;
         turbo2 = 3;
 
         left = (Math.abs(gamepad1.left_stick_y) < 0.05) ? 0 : gamepad1.left_stick_y;
@@ -70,22 +91,25 @@ public class teleopMarina extends OpMode {
 
         reducePowers(Math.max(frontLeftPower, Math.max(backLeftPower, Math.max(frontRightPower, backRightPower))));
 
-        if (gamepad1.right_bumper) turbo ++;
-        if (gamepad1.left_bumper) turbo ++;
+        if (gamepad1.right_bumper || gamepad1.left_bumper) turbo ++;
 
-        frontRight.setPower((frontRightPower*turbo)/5);
-        backRight.setPower((backRightPower*turbo)/5);
-        frontLeft.setPower((frontLeftPower*turbo)/5);
-        backLeft.setPower((backLeftPower*turbo)/5);
+        frontRight.setPower((frontRightPower*turbo)/10);
+        backRight.setPower((backRightPower*turbo)/10);
+        frontLeft.setPower((frontLeftPower*turbo)/10);
+        backLeft.setPower((backLeftPower*turbo)/10);
 
         extender.setPower(-left2);
 
-        if(gamepad2.dpad_down){
+        if(gamepad2.right_trigger>0.5 || gamepad2.left_trigger>0.5){
             collector.setPower(0);
-        } else if (gamepad2.dpad_left){
-            collector.setPower(-1);
-        } else if (gamepad2.dpad_right){
-            collector.setPower(1);
+        } else {
+            if (gamepad2.dpad_down) {
+                collector.setPower(0);
+            } else if (gamepad2.dpad_left) {
+                collector.setPower(-1);
+            } else if (gamepad2.dpad_right) {
+                collector.setPower(1);
+            }
         }
 
         if (gamepad2.right_bumper) turbo2 ++;
